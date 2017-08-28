@@ -17,7 +17,7 @@ Using two terminal
 Terminal-1
 ```sh
 zanywhale@ubuntu:$ gcc -o nfqnl_test nfqnl_test.c -lnetfilter_queue -Wall
-zanywhale@ubuntu:$ ./nfqnl_test
+zanywhale@ubuntu:$ sudo ./nfqnl_test
 ```
 
 Terminal-2
