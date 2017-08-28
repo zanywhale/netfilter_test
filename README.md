@@ -1,8 +1,24 @@
 # netfilter_test
 Netfilter
 
+* Environment
+Ubuntu 16.04.02 LTS
+
+* Dependency
+```sh
+sudo apt-get install libnetfilter-queue-dev
+```
+
 * How2Use
-gcc -o nfqnl_test nfqnl_test.c -lnetfilter_queue -Wall
-sudo iptables -A OUTPUT -p tcp -j NFQUEUE
-./nfqnl_test
+Using two terminal
+Terminal-1
+```sh
+zanywhale@ubuntu:$ gcc -o nfqnl_test nfqnl_test.c -lnetfilter_queue -Wall
+zanywhale@ubuntu:$ ./nfqnl_test
+```
+Terminal-2
+```sh
+zanywhale@ubuntu:$ sudo iptables -A OUTPUT -p tcp -j NFQUEUE
+zanywhale@ubuntu:$ sudo iptables -F
+```
 
