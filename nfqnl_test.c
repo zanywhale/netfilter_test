@@ -68,27 +68,41 @@ static u_int32_t print_pkt (struct nfq_data *tb, uint8_t *packets)
 	return id;
 }	
 
+int check_url(uint8_t *packets)
+{
+	uint8_t *http_data = 0;
+	int16_t ip_size=0, tcp_size=0;
+	Ip_H *ip_h;
+	Tcp_H *tcp_h;
+
+	ip_h = (Ip_H *)packets;
+	if(ip_h->p == IPPROTO_TCP){
+		ip_size = ((ip_h->chk)&0xf)*4;
+		tcp_h = (Tcp_H *)(packets + ip_size);
+		tcp_size = (tcp_h->data_offset)*4;
+
+		if(ntohs(tcp_h->dst_port)==80 && (ip_h->len - ip_size - tcp_size))
+			http_data = packets + ip_size + tcp_size;
+	}
+
+	if(http_data == 0){
+		return 0;
+	}
+	else if(strstr((const char*)http_data, "zanywhale.com") != NULL){
+		return 1;
+	}
+	return 0;
+}
+
 static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 	      struct nfq_data *nfa, void *data)
 {
 	uint8_t packets[1514];
-	uint8_t *http_data;
 	u_int32_t id = print_pkt(nfa, packets);
 	printf("entering callback\n");
-	http_data = packets+40;
-	if(strstr(http_data, "zanywhale.com") != NULL)
+	if(check_url(packets))
 		return nfq_set_verdict(qh, id, NF_DROP, 0, NULL);
-	// ip_h = (Ip_H *)packets;
-	// if(ip_h->p == IPPROTO_TCP){
-	// 	tcp_h = (Tcp_H *)(packets + ((ip_h->chk)&0xf)*4);
-	// 	if(ntohs(tcp_h->dst_port) == 80){
-	// 		http_data = packets + ((ip_h->chk)&0xf)*4 + (tcp_h->data_offset)*4;
-	// 		if(strstr(http_data, "avnana.com") != NULL){
-	// 			return nfq_set_verdict(qh, id, NF_DROP, 0, NULL);
-	// 		}
-	// 	}
-	// }
-	// else
+	else
 		return nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
 }
 
