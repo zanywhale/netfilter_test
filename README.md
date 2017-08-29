@@ -12,7 +12,7 @@ sudo apt-get install libnetfilter-queue-dev
 
 * How2Use
 
-Using two terminal
+Using two terminals
 
 Terminal-1
 ```sh
